@@ -1,0 +1,431 @@
+:root {
+    --negro: #111111;
+    --blanco: #FFFFFF;
+    --mostaza: #FCE19B;
+    --crema-fondo: #FDF5EE;
+    --crema-tarjeta: #FDF6EE;
+    --borde-cafe: #A4622D;
+    --naranja-badge: #D97324;
+    --gris-texto: #666666;
+    --gradiente-match: linear-gradient(90deg, #B5D0F5 0%, #FDE39C 100%);
+    --fuente-principal: 'Inter', sans-serif;
+    --fuente-marca: 'Caveat', cursive;
+}
+*{
+    margin:0;
+    padding:0;
+}
+html{
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+*, *::before, *::after{
+    box-sizing: inherit;
+}
+h1,h2,h3,.nombre-marca{
+    font-weight: 700;
+}
+h1 { 
+    font-size: 2.25rem;
+}
+h2 { 
+    font-size: 1.85rem;
+}
+h3 { 
+    font-size: 1.15rem; 
+}
+body {
+    color: var(--negro);
+    font-family: var(--fuente-principal);
+    font-size: 16px;
+    line-height: 1.75;
+}
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;        
+}
+section{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 85%;
+    margin-inline: auto;
+}
+img, iframe{
+    max-width: 100%;
+}
+a {
+    color: inherit;
+    text-decoration: none;
+}
+button{
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    align-self: flex-start;
+    color:var(--azul);
+    border:2px solid var(--azul); 
+    background-color: white;
+}
+button, a {
+    transition: 0.3s;
+}
+button:hover, .grupo-imagenes a:hover{
+    filter: brightness(0.8);
+}
+nav{
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 76px;
+    box-shadow: 0 2px 0px rgba(0, 0, 0, 0.15);
+}
+nav img{
+    height: 38px;
+    width: auto;
+}
+.nombre-y-logo{
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+.menu-links {
+    display: flex;
+    gap: 2rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+.menu-links a:hover{
+    text-decoration: underline;
+}
+.auth-buttons {
+    display: flex;
+    gap: 0.75rem;
+}
+.btn-outline {
+    background-color: var(--blanco);
+    color: var(--negro);
+}
+.btn-solid {
+    background-color: var(--negro);
+    color: var(--blanco);
+}
+.btn {
+    padding: 0.6rem 1.4rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid var(--negro);
+}
+.btn:hover{
+    filter: brightness(0.8);
+}
+header{
+    background-color: var(--blanco);
+    position: sticky;
+    top: 0;
+}
+.dos-columnas{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+}
+.columna-de-elementos{
+    display: flex;
+    flex-direction: column;
+    gap:1rem;
+}
+#hero{
+    width: 100%;
+    background-color: var(--mostaza);
+    align-items: center;
+}
+#hero img {
+    width: 100%;
+    object-fit: cover;
+}
+.mapa{
+    width: 100%;
+}
+.card-reposteria {
+    background-color: var(--crema-tarjeta);
+    border: 1px solid #E5C8B0;
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+.card-reposteria:hover {
+    transform: translateY(-5px);
+}
+#match-dia{
+    background: var(--gradiente-match);
+    padding: 5rem 5rem;
+    width: 100%;
+}
+.texto-centrado{
+    text-align: center;
+}
+.fila-flexible{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+.fila-flexible img{
+    width: 30%
+}
+.fila-flexible a{
+    text-decoration: underline;
+}
+.fila-flexible a::after{
+    content:"↗"
+}
+.vaso-flotante {
+    transition: transform 0.3s ease;
+}
+.vaso-flotante:hover {
+    transform: translateY(-8px) rotate(-2deg);
+}
+#sucursal-wrapper{
+    justify-content: center;
+}
+footer {
+    display: flex;
+    background-color: var(--negro);
+    color: var(--blanco);
+    padding: 2rem;
+    font-size: 0.85rem;
+    justify-content: space-between;
+    margin-top: 4rem;
+}
+.redes a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.redes img {
+    width: 20px;
+    height: 20px;
+}
+
+/*MENU*/
+#menu, #promos, #registro{
+    margin-inline: auto;
+    padding-top: 3rem;
+}
+.filtros-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+.pill {
+    padding: 0.45rem 1.25rem;
+    border-radius: 50px;
+    border: 1px solid #CCCCCC;
+    background-color: var(--blanco);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.pill.activo, .pill:hover {
+    background-color: var(--negro);
+    color: var(--blanco);
+    border-color: var(--negro);
+}
+.categoria-seccion {
+    margin-bottom: 3.5rem;
+}
+.categoria-seccion h2 {
+    margin-bottom: 1.5rem;
+}
+.grid-bebidas {
+    display: grid;
+    grid-template-columns: repeat(4, 25%);
+    gap: 1.25rem;
+}
+.card-bebida {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #EAEAEA;
+    border-radius: 12px;
+    padding: 1rem;
+    gap:1rem;
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.card-bebida:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    transform: translateY(-3px);
+}
+.card-bebida img {
+    width: 50%;
+    margin-inline: auto;
+}
+
+#personaliza-box {
+    background-color: var(--crema-tarjeta);
+    border: 1px solid var(--borde-cafe);
+    border-radius: 14px;
+    padding: 2rem;    
+}
+.card-extra {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+    border: 1px solid #E5D3C5;
+    background-color: var(--blanco);
+    border-radius: 10px;
+    padding: 1.5rem;
+}
+#personaliza-box > .fila-flexible {
+    align-items: stretch;
+    gap: 1rem;
+}
+.extra-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.badge-precio {
+    background-color: var(--naranja-badge);
+    color: var(--blanco);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.65rem;
+    border-radius: 50px;
+}
+.lista-dos-columnas,
+.lista-simple {
+    padding-left: 1.1rem;
+    font-size: 0.85rem;
+    color: #444;
+}
+.lista-dos-columnas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem 1rem;
+}
+
+/* 3. RECOMPENSAS Y PROMOCIONES*/
+.tarjeta-digital {
+    background-color: var(--crema-tarjeta);
+    border: 1.5px solid var(--borde-cafe);
+    border-radius: 14px;
+    padding: 2.5rem;
+}
+.tarjeta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
+.codigo-miembro {
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+.grid-sellos {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2.5rem;
+    justify-items: center;
+    justify-content: space-between;
+}
+.sello {
+    width: 86px;
+    height: 86px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sello.completado {
+    background-color: var(--blanco);
+    border: 1.5px solid var(--borde-cafe);
+    color: var(--borde-cafe);
+}
+.sello.completado svg {
+    width: 36px;
+    height: 36px;
+}
+.sello.pendiente, .sello.premio {
+    background-color: #EAEAEA;
+    border: 1.5px dashed #777777;
+}
+.sello.premio img {
+    width: 42px;
+    height: 42px;
+}
+.card-promo {
+    background-color: var(--crema-tarjeta);
+    border: 1px solid var(--borde-cafe);
+    border-radius: 12px;
+    padding: 1.75rem 1.25rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+.card-promo img {
+    width: 50%;
+}
+.card-login {
+    background-color: var(--blanco);
+    border-radius: 16px;
+    padding: 1.5rem;
+    width: 600px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    margin-inline: auto;
+    align-items: center;
+}
+.card-login img{
+    width: 200px;
+}
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: left;
+}
+.grupo-input label {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.grupo-input input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 1.5px solid var(--negro);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    background-color: var(--blanco);
+}
+.input-password {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.titulo-subtitulo{
+    gap: 0.5rem;
+}
+#login{
+    padding: 4rem 0;
+    background-image: url("../img/fondo.png");
+}
+#registro{
+    background-color: var(--crema-fondo);
+}
+.form-wrapper{
+    width: 80%;
+    margin-inline: auto;
+}

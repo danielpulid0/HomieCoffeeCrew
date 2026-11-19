@@ -1,3 +1,10 @@
+<?php
+require_once __DIR__ . '/includes/funciones.php';
+$resultado_promociones = obtener_promociones_vigentes();
+$promocion_destacada = $resultado_promociones
+    ? mysqli_fetch_assoc($resultado_promociones)
+    : false;
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,29 +19,44 @@
 <body>
     <header>
         <nav>
-            <a href="index.html" class="nombre-y-logo">
+            <a href="index.php" class="nombre-y-logo">
                 <img src="img/homie_logo.png" alt="Logo Homie Coffee Crew">
                 <p class="nombre-marca">Homie Coffee Crew</p>
             </a>
             <div class="menu-links">
-                <a href="menu.html">Menú</a>
-                <a href="recompensas.html">Recompensas</a>
+                <a href="menu.php">Menú</a>
+                <a href="recompensas.php">Recompensas</a>
             </div>
             <div class="auth-buttons">
-                <a href="login.html" class="btn btn-outline btn">Iniciar sesión</a>
-                <a href="registro.html" class="btn btn-solid btn">Unirse al crew</a>
+                <a href="login.php" class="btn btn-outline btn">Iniciar sesión</a>
+                <a href="cliente/registro.php" class="btn btn-solid btn">Unirse al crew</a>
             </div>
         </nav>
     </header>
 
     <main>
         <section id="hero" class="dos-columnas">
-            <img src="img/cafeHalloween.png" alt="Bebida de temporada">
-            <div class="columna-de-elementos">
-                <h1>¡Solo por tiempo limitado!</h1>
-                <h2>Ven a probar nuestros productos de temporada.</h2>
-                <p>Aquí nos tomamos el tiempo de elaborar desde cero todos nuestros productos. ¡Ven a probar nuestro sabor artesanal!</p>
-            </div>
+            <?php if ($promocion_destacada): ?>
+                <img src="<?= escapar($promocion_destacada['imagen_url'] ?: 'img/cafeHalloween.png') ?>" alt="<?= escapar($promocion_destacada['titulo']) ?>">
+                <div class="columna-de-elementos">
+                    <h1><?= escapar($promocion_destacada['titulo']) ?></h1>
+                    <h2>Promoción vigente hasta el <?= escapar(date('d/m/Y', strtotime($promocion_destacada['fecha_vigencia']))) ?></h2>
+                    <?php if ($promocion_destacada['descripcion'] !== null && $promocion_destacada['descripcion'] !== ''): ?>
+                        <p><?= escapar($promocion_destacada['descripcion']) ?></p>
+                    <?php endif; ?>
+                </div>
+            <?php elseif ($resultado_promociones): ?>
+                <img src="img/cafeHalloween.png" alt="Bebida de temporada">
+                <div class="columna-de-elementos">
+                    <h1>Homie Coffee Crew</h1>
+                    <h2>Descubre nuestras bebidas.</h2>
+                    <a href="menu.php" class="enlace-subrayado">Ver el menú</a>
+                </div>
+            <?php else: ?>
+                <div class="columna-de-elementos">
+                    <p class="mensaje-error" role="alert">No fue posible cargar la promoción destacada.</p>
+                </div>
+            <?php endif; ?>
         </section>
 
         <section id="reposteria" class="dos-columnas">
@@ -57,7 +79,7 @@
                 <img src="img/cafeFrio.png" alt="Bebida fría" class="vaso-flotante">
                 <div class="columna-de-elementos">
                     <h2>Encuentra tu match del día</h2>
-                    <a href="menu.html" class="enlace-subrayado">Ver todas las bebidas</a>
+                    <a href="menu.php" class="enlace-subrayado">Ver todas las bebidas</a>
                 </div>
                 <img src="img/cafeCanela.png" alt="Bebida fría con cereal" class="vaso-flotante">
             </div>
@@ -79,7 +101,7 @@
             <p>Martes-Domingo 10:00 - 20:00 hrs</p>
         </div>
         <div class="redes">
-            <a href="https://instagram.com/homie.coffeecrew" target="_blank">
+            <a href="https://instagram.com/homie.coffeecrew" target="_blank" rel="noopener noreferrer">
                 <img src="img/insta.png" alt="Instagram">
                 <p>homie.coffeecrew</p>
             </a>

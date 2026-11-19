@@ -1,3 +1,8 @@
+<?php
+require_once __DIR__ . '/../includes/funciones.php';
+requerir_empleado();
+$kpis = obtener_kpis_reportes();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,17 +17,17 @@
 <body>
     <header>
         <nav>
-            <a href="fidelizacion.html" class="nombre-y-logo">
+            <a href="fidelizacion.php" class="nombre-y-logo">
                 <img src="../img/homie_logo.png" alt="Logo Homie Coffee Crew">
                 <span class="nombre-marca">Homie Coffee Crew</span>
             </a>
             <div class="menu-links">
-                <a href="fidelizacion.html">Fidelización</a>
-                <a href="catalogo.html">Catálogo</a>
-                <a href="reportes.html" class="activo">Reportes y Métricas</a>
+                <a href="fidelizacion.php">Fidelización</a>
+                <a href="catalogo.php">Catálogo</a>
+                <a href="reportes.php" class="activo">Reportes y Métricas</a>
             </div>
             <div class="auth-buttons">
-                <a href="../login.html" class="btn-icono-salir" aria-label="Cerrar sesión" title="Cerrar sesión">
+                <a href="../login.php?cerrar_sesion=1" class="btn-icono-salir" aria-label="Cerrar sesión" title="Cerrar sesión">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                         <polyline points="16 17 21 12 16 7"></polyline>
@@ -43,35 +48,35 @@
             </select>
         </div>
 
+        <?php if (!$kpis): ?>
+            <p class="mensaje-error" role="alert">No fue posible cargar los reportes. Verifica la conexión con la base de datos.</p>
+        <?php else: ?>
         <div class="kpi-grid">
             <article class="card-kpi">
-                <span class="kpi-titulo">Nuevos miembros</span>
+                <span class="kpi-titulo">Miembros</span>
                 <div class="kpi-dato">
-                    <strong>21</strong>
-                    <span class="kpi-variacion">+15%</span>
+                    <strong><?= (int) $kpis['total_miembros'] ?></strong>
                 </div>
             </article>
 
             <article class="card-kpi">
                 <span class="kpi-titulo">Promociones activas</span>
                 <div class="kpi-dato">
-                    <strong>2</strong>
+                    <strong><?= (int) $kpis['promos_activas'] ?></strong>
                 </div>
             </article>
 
             <article class="card-kpi">
                 <span class="kpi-titulo">Sellos otorgados</span>
                 <div class="kpi-dato">
-                    <strong>218</strong>
-                    <span class="kpi-variacion">+15%</span>
+                    <strong><?= (int) $kpis['sellos_otorgados'] ?></strong>
                 </div>
             </article>
 
             <article class="card-kpi">
                 <span class="kpi-titulo">Bebidas Canjeadas</span>
                 <div class="kpi-dato">
-                    <strong>21</strong>
-                    <span class="kpi-variacion">+15%</span>
+                    <strong><?= (int) $kpis['bebidas_canjeadas'] ?></strong>
                 </div>
             </article>
         </div>
@@ -92,6 +97,7 @@
                 <canvas id="graficaReportes"></canvas>
             </div>
         </section>
+        <?php endif; ?>
     </main>
 </body>
 </html>

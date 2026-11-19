@@ -1,10 +1,46 @@
+<?php
+require_once __DIR__ . '/../includes/funciones.php';
+iniciar_sesion();
+
+$error = '';
+$nombre = '';
+$correo = '';
+
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre = isset($_POST['nombre']) && is_string($_POST['nombre']) ? trim($_POST['nombre']) : '';
+    $correo = isset($_POST['correo']) && is_string($_POST['correo']) ? trim($_POST['correo']) : '';
+    $password = isset($_POST['password']) && is_string($_POST['password']) ? $_POST['password'] : '';
+    $confirmar = isset($_POST['confirm_password']) && is_string($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
+
+    if ($nombre === '' || mb_strlen($nombre, 'UTF-8') > 100 || !filter_var($correo, FILTER_VALIDATE_EMAIL) || strlen($correo) > 120) {
+        $error = 'Escribe un nombre y un correo electrónico válido.';
+    } elseif (mb_strlen($password, 'UTF-8') < 8 || !preg_match('/\p{L}/u', $password) || !preg_match('/\d/', $password)) {
+        $error = 'La contraseña debe tener al menos 8 caracteres, una letra y un número.';
+    } elseif ($password !== $confirmar) {
+        $error = 'Las contraseñas no coinciden.';
+    } elseif (!isset($_POST['terminos'])) {
+        $error = 'Debes aceptar los términos y condiciones para continuar.';
+    } else {
+        $registro = registrar_cliente($nombre, $correo, $password);
+        if ($registro === true) {
+            $_SESSION['mensaje_login'] = 'Tu cuenta se creó correctamente. Ya puedes iniciar sesión.';
+            header('Location: ../login.php');
+            exit;
+        }
+
+        $error = $registro === 'correo_existente'
+            ? 'Ya existe una cuenta con ese correo electrónico.'
+            : 'No se pudo crear la cuenta. Verifica la conexión con la base de datos e inténtalo de nuevo.';
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro | Homie Coffee Crew</title>
-    <link rel="stylesheet" href="css/styles2.css">
+    <link rel="stylesheet" href="../css/styles2.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,34 +49,37 @@
 <body class="fondo-crema">
     <header>
         <nav>
-            <a href="index.html" class="nombre-y-logo">
-                <img src="img/homie_logo.png" alt="Logo Homie Coffee Crew">
+            <a href="../index.php" class="nombre-y-logo">
+                <img src="../img/homie_logo.png" alt="Logo Homie Coffee Crew">
                 <p class="nombre-marca">Homie Coffee Crew</p>
             </a>
             <div class="menu-links">
-                <a href="menu.html">Menú</a>
-                <a href="recompensas.html">Recompensas</a>
+                <a href="../menu.php">Menú</a>
+                <a href="../recompensas.php">Recompensas</a>
             </div>
             <div class="auth-buttons">
-                <a href="login.html" class="btn btn-outline btn">Iniciar sesión</a>
-                <a href="registro.html" class="btn btn-solid btn">Unirse al crew</a>
+                <a href="../login.php" class="btn btn-outline btn">Iniciar sesión</a>
+                <a href="registro.php" class="btn btn-solid btn">Unirse al crew</a>
             </div>
         </nav>
     </header>
 
     <main id="registro" class="dos-columnas">
-        <img src="img/cafeMano.png" alt="Vaso Homie Coffee Crew en mano">
+        <img src="../img/cafeMano.png" alt="Vaso Homie Coffee Crew en mano">
         <div class="form-wrapper">
             <h1>Registro</h1>
-            <form action="#" method="POST" class="formulario columna-de-elementos">
+            <form action="registro.php" method="POST" class="formulario columna-de-elementos">
+                <?php if ($error !== ''): ?>
+                    <p class="mensaje-error" role="alert"><?= escapar($error) ?></p>
+                <?php endif; ?>
                 <div class="grupo-input">
                     <label for="nombre">Nombre *</label>
-                    <input type="text" id="nombre" name="nombre" required>
+                    <input type="text" id="nombre" name="nombre" maxlength="100" value="<?= escapar($nombre) ?>" required>
                 </div>
 
                 <div class="grupo-input">
                     <label for="correo">Correo electrónico *</label>
-                    <input type="email" id="correo" name="correo" required>
+                    <input type="email" id="correo" name="correo" maxlength="120" value="<?= escapar($correo) ?>" required>
                 </div>
 
                 <div class="grupo-input">
@@ -69,14 +108,14 @@
                 </div>
 
                 <label class="caja-terminos">
-                    <input type="checkbox" required>
+                    <input type="checkbox" name="terminos" required>
                     <span>Acepto los <strong>términos y condiciones</strong> y la <strong>política de privacidad</strong>.</span>
                 </label>
 
                 <button type="submit" class="btn btn-solid btn-block">Crear cuenta</button>
             </form>
 
-            <p class="pie-form">¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>            
+            <p class="pie-form">¿Ya tienes cuenta? <a href="../login.php">Inicia sesión</a></p>
         </div>
     </main>
 </body>

@@ -1,4 +1,5 @@
 const modalItem = document.querySelector("#modal-item");
+const modalEliminar = document.querySelector("#modal-eliminar");
 const selectorTipoItem = document.querySelector("#selector-tipo-item");
 const formulariosItem = {
     bebida: document.querySelector("#form-bebida"),
@@ -9,8 +10,22 @@ document.querySelector("#abrir-modal-item").addEventListener("click", () => {
     modalItem.showModal();
 });
 
-document.querySelector(".btn-cerrar-modal").addEventListener("click", () => {
-    modalItem.close();
+document.querySelectorAll(".modal-catalogo").forEach((modal) => {
+    modal.addEventListener("click", (evento) => {
+        if (evento.target === modal) modal.close();
+    });
+    modal.querySelectorAll(".btn-cerrar-modal, .btn-cancelar-modal").forEach((boton) => {
+        boton.addEventListener("click", () => modal.close());
+    });
+});
+
+document.querySelectorAll("[data-eliminar-id]").forEach((boton) => {
+    boton.addEventListener("click", () => {
+        document.querySelector("#eliminar-entidad").value = boton.dataset.eliminarEntidad;
+        document.querySelector("#eliminar-id").value = boton.dataset.eliminarId;
+        document.querySelector("#eliminar-nombre").textContent = boton.dataset.eliminarNombre;
+        modalEliminar.showModal();
+    });
 });
 
 document.querySelectorAll("[data-tipo-item]").forEach((boton) => {
@@ -39,12 +54,6 @@ modalItem.addEventListener("close", () => {
         formulario.hidden = true;
     });
     selectorTipoItem.hidden = false;
-});
-
-modalItem.addEventListener("click", (evento) => {
-    if (evento.target === modalItem) {
-        modalItem.close();
-    }
 });
 
 document.querySelectorAll(".tab-btn").forEach((boton) => {

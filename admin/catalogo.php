@@ -1,98 +1,101 @@
 <?php
 require_once __DIR__ . '/../includes/funciones.php';
 requerir_empleado();
-require_once __DIR__ . '/../includes/database.php';
 
-if (!isset($_SESSION['csrf_catalogo']) || !is_string($_SESSION['csrf_catalogo'])) {
-    $_SESSION['csrf_catalogo'] = bin2hex(random_bytes(32));
-}
-$csrf_catalogo = $_SESSION['csrf_catalogo'];
 $error_catalogo = '';
-$resultado_guardado = isset($_GET['guardado']) ? $_GET['guardado'] : '';
+$resultado_guardado = $_GET['guardado'] ?? '';
 
-if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $tipo = isset($_POST['tipo']) && is_string($_POST['tipo']) ? $_POST['tipo'] : '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $tipo = obtener_post_texto('tipo', false);
 
-    if (
-        !isset($_POST['csrf_catalogo']) ||
-        !is_string($_POST['csrf_catalogo']) ||
-        !hash_equals($csrf_catalogo, $_POST['csrf_catalogo'])
-    ) {
-        $error_catalogo = 'La solicitud expiró. Recarga la página e inténtalo de nuevo.';
-    } elseif (!$db) {
+    if (!$db) {
         $error_catalogo = 'No fue posible conectar con la base de datos.';
     } elseif ($tipo === 'bebida') {
-        $nombre = isset($_POST['nombre']) && is_string($_POST['nombre']) ? trim($_POST['nombre']) : '';
-        $categoria = isset($_POST['categoria']) && is_string($_POST['categoria']) ? $_POST['categoria'] : '';
-        $descripcion = isset($_POST['descripcion']) && is_string($_POST['descripcion']) ? trim($_POST['descripcion']) : '';
-        $precio = isset($_POST['precio']) && is_string($_POST['precio'])
-            ? filter_var($_POST['precio'], FILTER_VALIDATE_FLOAT)
-            : false;
-        $estado_texto = isset($_POST['estado']) && is_string($_POST['estado']) ? $_POST['estado'] : '';
-        $estado = $estado_texto === 'Deshabilitado' ? 0 : 1;
-        $categorias_validas = array('Tradicional', 'Alternativo', 'No Brew');
+        $nombre = obtener_post_texto('nombre');
+        $categoria = obtener_post_texto('categoria', false);
+        $descripcion = obtener_post_texto('descripcion');
+        $precio_texto = $_POST['precio'] ?? '';
+        $precio = (float) $precio_texto;
+        $estado = obtener_post_texto('estado', false) === 'Deshabilitado' ? 0 : 1;
 
-        if (
-            $nombre === '' ||
-            strlen($nombre) > 100 ||
-            !in_array($categoria, $categorias_validas, true) ||
-            $precio === false ||
-            $precio < 0 ||
-            !in_array($estado_texto, array('Habilitado', 'Deshabilitado'), true)
-        ) {
+        if ($nombre === '' || $categoria === '' || !is_numeric($precio_texto) || $precio < 0) {
             $error_catalogo = 'Revisa el nombre, la categoría y el precio de la bebida.';
         } else {
-            $consulta = mysqli_prepare(
-                $db,
-                'INSERT INTO bebidas (nombre, descripcion, precio, categoria, estado_disponibilidad) VALUES (?, ?, ?, ?, ?);'
-            );
+            $consulta = mysqli_prepare($db, 'INSERT INTO bebidas (nombre, descripcion, precio, categoria, estado_disponibilidad) VALUES (?, ?, ?, ?, ?);');
             if ($consulta) {
                 mysqli_stmt_bind_param($consulta, 'ssdsi', $nombre, $descripcion, $precio, $categoria, $estado);
-            }
-            if ($consulta && mysqli_stmt_execute($consulta)) {
-                header('Location: catalogo.php?guardado=bebida');
-                exit;
+                if (mysqli_stmt_execute($consulta)) {
+                    header('Location: catalogo.php?guardado=bebida');
+                    exit;
+                }
             }
             $error_catalogo = 'No se pudo guardar la bebida.';
         }
     } elseif ($tipo === 'promocion') {
-        $titulo = isset($_POST['titulo']) && is_string($_POST['titulo']) ? trim($_POST['titulo']) : '';
-        $inicio = isset($_POST['inicio']) && is_string($_POST['inicio']) ? $_POST['inicio'] : '';
-        $vencimiento = isset($_POST['vencimiento']) && is_string($_POST['vencimiento']) ? $_POST['vencimiento'] : '';
-        $estado_texto = isset($_POST['estado']) && is_string($_POST['estado']) ? $_POST['estado'] : '';
-        $estado = $estado_texto === 'Deshabilitado' ? 0 : 1;
-        $formato_fecha = 'Y-m-d';
-        $fecha_inicio = DateTime::createFromFormat($formato_fecha, $inicio);
-        $fecha_vencimiento = DateTime::createFromFormat($formato_fecha, $vencimiento);
+        $titulo = obtener_post_texto('titulo');
+        $inicio = obtener_post_texto('inicio', false);
+        $vencimiento = obtener_post_texto('vencimiento', false);
+        $estado = obtener_post_texto('estado', false) === 'Deshabilitado' ? 0 : 1;
 
-        if (
-            $titulo === '' ||
-            !$fecha_inicio ||
-            !$fecha_vencimiento ||
-            strlen($titulo) > 120 ||
-            $fecha_inicio->format($formato_fecha) !== $inicio ||
-            $fecha_vencimiento->format($formato_fecha) !== $vencimiento ||
-            $inicio > $vencimiento ||
-            !in_array($estado_texto, array('Habilitado', 'Deshabilitado'), true)
-        ) {
+        if ($titulo === '' || $inicio === '' || $vencimiento === '' || $inicio > $vencimiento) {
             $error_catalogo = 'Revisa el título y el periodo de vigencia de la promoción.';
         } else {
-            $consulta = mysqli_prepare(
-                $db,
-                'INSERT INTO promociones (titulo, fecha_inicio, fecha_vigencia, estado_activo) VALUES (?, ?, ?, ?);'
-            );
+            $consulta = mysqli_prepare($db, 'INSERT INTO promociones (titulo, fecha_inicio, fecha_vigencia, estado_activo) VALUES (?, ?, ?, ?);');
             if ($consulta) {
                 mysqli_stmt_bind_param($consulta, 'sssi', $titulo, $inicio, $vencimiento, $estado);
-            }
-            if ($consulta && mysqli_stmt_execute($consulta)) {
-                header('Location: catalogo.php?guardado=promocion');
-                exit;
+                if (mysqli_stmt_execute($consulta)) {
+                    header('Location: catalogo.php?guardado=promocion');
+                    exit;
+                }
             }
             $error_catalogo = 'No se pudo guardar la promoción.';
+        }
+    } elseif ($tipo === 'eliminar') {
+        $tablas = array(
+            'bebida' => array('bebidas', 'id_bebida'),
+            'promocion' => array('promociones', 'id_promocion')
+        );
+        $entidad = obtener_post_texto('entidad', false);
+        $id = (int) ($_POST['id'] ?? 0);
+
+        if (!isset($tablas[$entidad]) || $id <= 0) {
+            $error_catalogo = 'El elemento que intentas eliminar no es válido.';
+        } else {
+            list($tabla, $columna_id) = $tablas[$entidad];
+            $consulta = mysqli_prepare($db, "DELETE FROM $tabla WHERE $columna_id = ? LIMIT 1;");
+            if ($consulta) {
+                mysqli_stmt_bind_param($consulta, 'i', $id);
+                if (mysqli_stmt_execute($consulta)) {
+                    header('Location: catalogo.php?guardado=eliminado');
+                    exit;
+                }
+            }
+            $error_catalogo = 'No se pudo eliminar el registro.';
         }
     } else {
         $error_catalogo = 'El tipo de elemento solicitado no es válido.';
     }
+}
+
+function renderizar_boton_eliminar($entidad, $id, $nombre) {
+    ?>
+    <td>
+        <button
+            type="button"
+            class="btn-trash"
+            data-eliminar-entidad="<?= escapar($entidad) ?>"
+            data-eliminar-id="<?= (int) $id ?>"
+            data-eliminar-nombre="<?= escapar($nombre) ?>"
+            aria-label="Eliminar"
+            title="Eliminar"
+        >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+        </button>
+    </td>
+    <?php
 }
 
 $resultado_bebidas = obtener_bebidas();
@@ -104,7 +107,7 @@ $resultado_promociones = obtener_promociones();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Catálogo | Homie Coffee Crew</title>
-    <link rel="stylesheet" href="../css/styles2.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -133,13 +136,15 @@ $resultado_promociones = obtener_promociones();
         </nav>
     </header>
 
-    <main id="catalogo">
+    <main id="catalogo" class="contenedor">
         <div class="fila-flexible">
-            <h1 class="admin-h1">Gestión de catálogo</h1>
+            <h1>Gestión de catálogo</h1>
             <button type="button" class="btn btn-solid" id="abrir-modal-item">Agregar item</button>
         </div>
         <?php if ($error_catalogo !== ''): ?>
             <p class="mensaje-error" role="alert"><?= escapar($error_catalogo) ?></p>
+        <?php elseif ($resultado_guardado === 'eliminado'): ?>
+            <p class="mensaje-exito" role="status">El registro se eliminó correctamente.</p>
         <?php elseif ($resultado_guardado === 'bebida' || $resultado_guardado === 'promocion'): ?>
             <p class="mensaje-exito" role="status">El registro se guardó correctamente.</p>
         <?php endif; ?>
@@ -150,7 +155,7 @@ $resultado_promociones = obtener_promociones();
                 <button type="button" class="tab-btn" data-tab="tab-promociones">Promociones</button>
             </div>
 
-            <div id="tab-bebidas" class="columna-de-elementos">
+            <div id="tab-bebidas" class="columna-de-elementos tab">
                 <div class="fila-flexible">
                     <div class="buscador-input">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -169,13 +174,14 @@ $resultado_promociones = obtener_promociones();
                                 <th>Descripción</th>
                                 <th>Precio</th>
                                 <th>Estado</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (!$resultado_bebidas): ?>
-                                <tr><td colspan="5">No fue posible cargar las bebidas.</td></tr>
+                                <tr><td colspan="6">No fue posible cargar las bebidas.</td></tr>
                             <?php elseif (mysqli_num_rows($resultado_bebidas) === 0): ?>
-                                <tr><td colspan="5">No hay bebidas registradas.</td></tr>
+                                <tr><td colspan="6">No hay bebidas registradas.</td></tr>
                             <?php else: ?>
                                 <?php while ($bebida = mysqli_fetch_assoc($resultado_bebidas)): ?>
                                     <tr>
@@ -184,6 +190,7 @@ $resultado_promociones = obtener_promociones();
                                         <td><?= escapar($bebida['descripcion']) ?></td>
                                         <td>$<?= number_format((float) $bebida['precio'], 2) ?></td>
                                         <td><?= $bebida['estado_disponibilidad'] ? 'Habilitado' : 'Deshabilitado' ?></td>
+                                        <?php renderizar_boton_eliminar('bebida', $bebida['id_bebida'], $bebida['nombre']); ?>
                                     </tr>
                                 <?php endwhile; ?>
                             <?php endif; ?>
@@ -192,7 +199,7 @@ $resultado_promociones = obtener_promociones();
                 </div>
             </div>
 
-            <div id="tab-promociones" class="columna-de-elementos oculto">
+            <div id="tab-promociones" class="columna-de-elementos oculto tab">
                 <div class="fila-flexible">
                     <div class="buscador-input">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -210,13 +217,14 @@ $resultado_promociones = obtener_promociones();
                                 <th>Inicio</th>
                                 <th>Vencimiento</th>
                                 <th>Estado</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (!$resultado_promociones): ?>
-                                <tr><td colspan="4">No fue posible cargar las promociones.</td></tr>
+                                <tr><td colspan="5">No fue posible cargar las promociones.</td></tr>
                             <?php elseif (mysqli_num_rows($resultado_promociones) === 0): ?>
-                                <tr><td colspan="4">No hay promociones registradas.</td></tr>
+                                <tr><td colspan="5">No hay promociones registradas.</td></tr>
                             <?php else: ?>
                                 <?php while ($promocion = mysqli_fetch_assoc($resultado_promociones)): ?>
                                     <tr>
@@ -224,6 +232,7 @@ $resultado_promociones = obtener_promociones();
                                         <td><?= escapar(date('d/m/Y', strtotime($promocion['fecha_inicio']))) ?></td>
                                         <td><?= escapar(date('d/m/Y', strtotime($promocion['fecha_vigencia']))) ?></td>
                                         <td><?= $promocion['estado_activo'] ? 'Habilitado' : 'Deshabilitado' ?></td>
+                                        <?php renderizar_boton_eliminar('promocion', $promocion['id_promocion'], $promocion['titulo']); ?>
                                     </tr>
                                 <?php endwhile; ?>
                             <?php endif; ?>
@@ -249,7 +258,6 @@ $resultado_promociones = obtener_promociones();
 
         <form id="form-bebida" class="formulario" action="catalogo.php" method="post" hidden>
             <input type="hidden" name="tipo" value="bebida">
-            <input type="hidden" name="csrf_catalogo" value="<?= escapar($csrf_catalogo) ?>">
             <div class="grupo-input">
                 <label for="bebida-nombre">Nombre</label>
                 <input id="bebida-nombre" name="nombre" type="text" maxlength="100" required>
@@ -285,7 +293,6 @@ $resultado_promociones = obtener_promociones();
 
         <form id="form-promocion" class="formulario" action="catalogo.php" method="post" hidden>
             <input type="hidden" name="tipo" value="promocion">
-            <input type="hidden" name="csrf_catalogo" value="<?= escapar($csrf_catalogo) ?>">
             <div class="grupo-input">
                 <label for="promocion-titulo">Título</label>
                 <input id="promocion-titulo" name="titulo" type="text" maxlength="120" required>
@@ -308,6 +315,23 @@ $resultado_promociones = obtener_promociones();
             <div class="fila-flexible modal-acciones">
                 <button type="button" class="btn btn-outline volver-selector">Volver</button>
                 <button type="submit" class="btn btn-solid">Agregar promoción</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog class="modal-catalogo" id="modal-eliminar" aria-labelledby="modal-eliminar-titulo">
+        <div class="fila-flexible modal-catalogo-header">
+            <h2 id="modal-eliminar-titulo">Confirmar eliminación</h2>
+            <button type="button" class="btn-cerrar-modal" aria-label="Cerrar">×</button>
+        </div>
+        <form action="catalogo.php" method="post" class="formulario">
+            <input type="hidden" name="tipo" value="eliminar">
+            <input type="hidden" name="entidad" id="eliminar-entidad">
+            <input type="hidden" name="id" id="eliminar-id">
+            <p>¿Seguro que deseas eliminar <strong id="eliminar-nombre"></strong>?</p>
+            <div class="fila-flexible modal-acciones">
+                <button type="button" class="btn btn-outline btn-cancelar-modal">Cancelar</button>
+                <button type="submit" class="btn btn-solid">Eliminar</button>
             </div>
         </form>
     </dialog>

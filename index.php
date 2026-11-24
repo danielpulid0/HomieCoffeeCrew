@@ -1,9 +1,6 @@
 <?php
 require_once __DIR__ . '/includes/funciones.php';
-$resultado_promociones = obtener_promociones_vigentes();
-$promocion_destacada = $resultado_promociones
-    ? mysqli_fetch_assoc($resultado_promociones)
-    : false;
+iniciar_sesion();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -11,52 +8,22 @@ $promocion_destacada = $resultado_promociones
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Homie Coffee Crew</title>
-    <link rel="stylesheet" href="css/styles2.css">
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="index.php" class="nombre-y-logo">
-                <img src="img/homie_logo.png" alt="Logo Homie Coffee Crew">
-                <p class="nombre-marca">Homie Coffee Crew</p>
-            </a>
-            <div class="menu-links">
-                <a href="menu.php">Menú</a>
-                <a href="recompensas.php">Recompensas</a>
-            </div>
-            <div class="auth-buttons">
-                <a href="login.php" class="btn btn-outline btn">Iniciar sesión</a>
-                <a href="cliente/registro.php" class="btn btn-solid btn">Unirse al crew</a>
-            </div>
-        </nav>
-    </header>
+    <?php renderizar_navbar(); ?>
 
     <main>
         <section id="hero" class="dos-columnas">
-            <?php if ($promocion_destacada): ?>
-                <img src="<?= escapar($promocion_destacada['imagen_url'] ?: 'img/cafeHalloween.png') ?>" alt="<?= escapar($promocion_destacada['titulo']) ?>">
-                <div class="columna-de-elementos">
-                    <h1><?= escapar($promocion_destacada['titulo']) ?></h1>
-                    <h2>Promoción vigente hasta el <?= escapar(date('d/m/Y', strtotime($promocion_destacada['fecha_vigencia']))) ?></h2>
-                    <?php if ($promocion_destacada['descripcion'] !== null && $promocion_destacada['descripcion'] !== ''): ?>
-                        <p><?= escapar($promocion_destacada['descripcion']) ?></p>
-                    <?php endif; ?>
-                </div>
-            <?php elseif ($resultado_promociones): ?>
-                <img src="img/cafeHalloween.png" alt="Bebida de temporada">
-                <div class="columna-de-elementos">
-                    <h1>Homie Coffee Crew</h1>
-                    <h2>Descubre nuestras bebidas.</h2>
-                    <a href="menu.php" class="enlace-subrayado">Ver el menú</a>
-                </div>
-            <?php else: ?>
-                <div class="columna-de-elementos">
-                    <p class="mensaje-error" role="alert">No fue posible cargar la promoción destacada.</p>
-                </div>
-            <?php endif; ?>
+            <img src="img/cafeHalloween.png" alt="Bebida de temporada">
+            <div class="columna-de-elementos hero-text">
+                <h1>¡Solo por tiempo limitado!</h1>
+                <h2>Ven a probar nuestros productos de temporada.</h2>
+                <p>Aquí nos tomamos el tiempo de elaborar desde cero todos nuestros productos. ¡Ven a probar nuestro sabor artesanal!</p>
+            </div>
         </section>
 
         <section id="reposteria" class="dos-columnas">
@@ -79,7 +46,7 @@ $promocion_destacada = $resultado_promociones
                 <img src="img/cafeFrio.png" alt="Bebida fría" class="vaso-flotante">
                 <div class="columna-de-elementos">
                     <h2>Encuentra tu match del día</h2>
-                    <a href="menu.php" class="enlace-subrayado">Ver todas las bebidas</a>
+                    <a href="menu.html" class="enlace-subrayado">Ver todas las bebidas</a>
                 </div>
                 <img src="img/cafeCanela.png" alt="Bebida fría con cereal" class="vaso-flotante">
             </div>

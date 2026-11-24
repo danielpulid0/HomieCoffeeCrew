@@ -9,7 +9,7 @@ $resultado_clientes = obtener_clientes();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control de Fidelización | Homie Coffee Crew</title>
-    <link rel="stylesheet" href="../css/styles2.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -38,8 +38,8 @@ $resultado_clientes = obtener_clientes();
         </nav>
     </header>
 
-    <main id="fidelizacion">
-        <h1 class="admin-h1">Control de fidelización</h1>
+    <main id="fidelizacion" class="contenedor">
+        <h1>Control de fidelización</h1>
         <section class="panel-admin">
             <div class="buscador-input">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -56,14 +56,14 @@ $resultado_clientes = obtener_clientes();
                     <p>No hay clientes registrados.</p>
                 <?php else: ?>
                     <?php while ($cliente = mysqli_fetch_assoc($resultado_clientes)): ?>
-                        <?php $sellos = max(0, min(10, (int) $cliente['sellos_actuales'])); ?>
+                        <?php $sellos = normalizar_sellos($cliente['sellos_actuales']); ?>
                         <article class="card-cliente">
                             <div class="fila-flexible">
                                 <div class="fila-flexible">
                                     <span class="avatar-inicial"><?= escapar(mb_strtoupper(mb_substr($cliente['nombre'], 0, 1, 'UTF-8'), 'UTF-8')) ?></span>
                                     <div>
                                         <h3><?= escapar($cliente['nombre']) ?></h3>
-                                        <span class="codigo-cliente">HOMMIE-<?= str_pad((string) $cliente['id_usuario'], 3, '0', STR_PAD_LEFT) ?></span>
+                                        <span class="codigo-cliente"><?= escapar(formatear_codigo_miembro($cliente['id_usuario'])) ?></span>
                                     </div>
                                 </div>
                                 <div class="cliente-acciones">

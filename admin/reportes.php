@@ -9,7 +9,7 @@ $kpis = obtener_kpis_reportes();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes y Métricas | Homie Coffee Crew</title>
-    <link rel="stylesheet" href="../css/styles2.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -38,7 +38,7 @@ $kpis = obtener_kpis_reportes();
         </nav>
     </header>
 
-    <main id="reportes">
+    <main id="reportes" class="contenedor">
         <div class="fila-flexible">
             <h1>Reportes generales</h1>
             <select class="select-filtro" aria-label="Periodo del reporte">
@@ -81,7 +81,6 @@ $kpis = obtener_kpis_reportes();
             </article>
         </div>
 
-        <!-- Gráfica -->
         <section class="seccion-grafica">
             <div class="barra-derecha">
                 <select class="select-filtro" aria-label="Filtrar métrica en gráfica">

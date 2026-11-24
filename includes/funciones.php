@@ -7,47 +7,42 @@ function obtener_conexion() {
     return $db;
 }
 
-function obtener_bebidas() {
+function ejecutar_consulta($sql) {
     $db = obtener_conexion();
     if (!$db) return false;
 
-    $sql = "SELECT id_bebida, imagen_url, nombre, categoria, precio, descripcion, estado_disponibilidad
-            FROM bebidas
-            ORDER BY categoria ASC, nombre ASC;";
     return mysqli_query($db, $sql);
 }
 
-function obtener_bebidas_disponibles() {
-    $db = obtener_conexion();
-    if (!$db) return false;
+function obtener_bebidas() {
+    $sql = "SELECT id_bebida, imagen_url, nombre, categoria, precio, descripcion, estado_disponibilidad
+            FROM bebidas
+            ORDER BY categoria ASC, nombre ASC;";
+    return ejecutar_consulta($sql);
+}
 
+function obtener_bebidas_disponibles() {
     $sql = "SELECT id_bebida, imagen_url, nombre, categoria, precio, descripcion
             FROM bebidas
             WHERE estado_disponibilidad = 1
             ORDER BY categoria ASC, nombre ASC;";
-    return mysqli_query($db, $sql);
+    return ejecutar_consulta($sql);
 }
 
 function obtener_promociones() {
-    $db = obtener_conexion();
-    if (!$db) return false;
-
     $sql = "SELECT id_promocion, titulo, descripcion, fecha_inicio, fecha_vigencia, imagen_url, estado_activo
             FROM promociones
             ORDER BY fecha_vigencia DESC;";
-    return mysqli_query($db, $sql);
+    return ejecutar_consulta($sql);
 }
 
 function obtener_promociones_vigentes() {
-    $db = obtener_conexion();
-    if (!$db) return false;
-
     $sql = "SELECT id_promocion, titulo, descripcion, fecha_inicio, fecha_vigencia, imagen_url
             FROM promociones
             WHERE estado_activo = 1
               AND CURDATE() BETWEEN fecha_inicio AND fecha_vigencia
             ORDER BY fecha_vigencia ASC;";
-    return mysqli_query($db, $sql);
+    return ejecutar_consulta($sql);
 }
 
 function obtener_datos_cliente($id_usuario) {
@@ -72,27 +67,21 @@ function obtener_datos_cliente($id_usuario) {
 }
 
 function obtener_clientes() {
-    $db = obtener_conexion();
-    if (!$db) return false;
-
     $sql = "SELECT id_usuario, nombre, correo, sellos_actuales
             FROM usuarios
             WHERE rol = 'cliente'
             ORDER BY nombre ASC;";
-    return mysqli_query($db, $sql);
+    return ejecutar_consulta($sql);
 }
 
 function obtener_kpis_reportes() {
-    $db = obtener_conexion();
-    if (!$db) return false;
-
     $sql = "SELECT
                 (SELECT COUNT(*) FROM usuarios WHERE rol = 'cliente') AS total_miembros,
                 (SELECT COUNT(*) FROM promociones WHERE estado_activo = 1 AND CURDATE() BETWEEN fecha_inicio AND fecha_vigencia) AS promos_activas,
                 (SELECT COUNT(*) FROM historial_fidelizacion WHERE tipo_movimiento = 'sello_otorgado') AS sellos_otorgados,
                 (SELECT COUNT(*) FROM historial_fidelizacion WHERE tipo_movimiento = 'premio_canjeado') AS bebidas_canjeadas;";
-    $consulta = mysqli_query($db, $sql);
-    return $consulta ? mysqli_fetch_assoc($consulta) : false;
+    $resultado = ejecutar_consulta($sql);
+    return $resultado ? mysqli_fetch_assoc($resultado) : false;
 }
 
 function registrar_cliente($nombre, $correo, $password) {
@@ -145,9 +134,13 @@ function iniciar_sesion() {
     }
 }
 
-function requerir_empleado($ruta_login = '../login.php') {
+function obtener_usuario_sesion() {
     iniciar_sesion();
-    $usuario = isset($_SESSION['usuario']) ? $_SESSION['usuario'] : null;
+    return $_SESSION['usuario'] ?? null;
+}
+
+function requerir_empleado($ruta_login = '../login.php') {
+    $usuario = obtener_usuario_sesion();
 
     if (!$usuario || !in_array($usuario['rol'], array('admin', 'barista'), true)) {
         header('Location: ' . $ruta_login);
@@ -155,6 +148,55 @@ function requerir_empleado($ruta_login = '../login.php') {
     }
 }
 
+function renderizar_navbar($prefijo = '') {
+    $usuario = obtener_usuario_sesion();
+    $ruta_prefijo = escapar($prefijo);
+    ?>
+    <header>
+        <nav>
+            <a href="<?= $ruta_prefijo ?>index.php" class="nombre-y-logo">
+                <img src="<?= $ruta_prefijo ?>img/homie_logo.png" alt="Logo Homie Coffee Crew">
+                <p class="nombre-marca">Homie Coffee Crew</p>
+            </a>
+            <div class="menu-links">
+                <a href="<?= $ruta_prefijo ?>menu.php">Menú</a>
+                <a href="<?= $ruta_prefijo ?>recompensas.php">Recompensas</a>
+            </div>
+            <div class="auth-buttons">
+                <?php if ($usuario): ?>
+                    <a href="<?= $ruta_prefijo ?>login.php?cerrar_sesion=1" class="btn-icono-salir" aria-label="Cerrar sesión" title="Cerrar sesión">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                    </a>
+                <?php else: ?>
+                    <a href="<?= $ruta_prefijo ?>login.php" class="btn btn-outline">Iniciar sesión</a>
+                    <a href="<?= $ruta_prefijo ?>cliente/registro.php" class="btn btn-solid">Unirse al crew</a>
+                <?php endif; ?>
+            </div>
+        </nav>
+    </header>
+    <?php
+}
+
 function escapar($valor) {
     return htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
+}
+
+function obtener_post_texto($clave, $recortar = true) {
+    if (!isset($_POST[$clave]) || !is_string($_POST[$clave])) {
+        return '';
+    }
+
+    return $recortar ? trim($_POST[$clave]) : $_POST[$clave];
+}
+
+function normalizar_sellos($sellos) {
+    return max(0, min(10, (int) $sellos));
+}
+
+function formatear_codigo_miembro($id_usuario) {
+    return 'HOMMIE-' . str_pad((string) $id_usuario, 3, '0', STR_PAD_LEFT);
 }

@@ -74,16 +74,6 @@ function obtener_clientes() {
     return ejecutar_consulta($sql);
 }
 
-function obtener_kpis_reportes() {
-    $sql = "SELECT
-                (SELECT COUNT(*) FROM usuarios WHERE rol = 'cliente') AS total_miembros,
-                (SELECT COUNT(*) FROM promociones WHERE estado_activo = 1 AND CURDATE() BETWEEN fecha_inicio AND fecha_vigencia) AS promos_activas,
-                (SELECT COUNT(*) FROM historial_fidelizacion WHERE tipo_movimiento = 'sello_otorgado') AS sellos_otorgados,
-                (SELECT COUNT(*) FROM historial_fidelizacion WHERE tipo_movimiento = 'premio_canjeado') AS bebidas_canjeadas;";
-    $resultado = ejecutar_consulta($sql);
-    return $resultado ? mysqli_fetch_assoc($resultado) : false;
-}
-
 function registrar_cliente($nombre, $correo, $password) {
     $db = obtener_conexion();
     if (!$db) return false;

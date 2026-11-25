@@ -122,7 +122,6 @@ $resultado_promociones = obtener_promociones();
             <div class="menu-links">
                 <a href="fidelizacion.php">Fidelización</a>
                 <a href="catalogo.php" class="activo">Catálogo</a>
-                <a href="reportes.php">Reportes y Métricas</a>
             </div>
             <div class="auth-buttons">
                 <a href="../login.php?cerrar_sesion=1" class="btn-icono-salir" aria-label="Cerrar sesión" title="Cerrar sesión">

@@ -24,7 +24,6 @@ $resultado_clientes = obtener_clientes();
             <div class="menu-links">
                 <a href="fidelizacion.php" class="activo">Fidelización</a>
                 <a href="catalogo.php">Catálogo</a>
-                <a href="reportes.php">Reportes y Métricas</a>
             </div>
             <div class="auth-buttons">
                 <a href="../login.php?cerrar_sesion=1" aria-label="Cerrar sesión" title="Cerrar sesión">

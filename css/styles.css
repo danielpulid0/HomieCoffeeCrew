@@ -522,16 +522,6 @@ footer {
     font-size: 0.9rem;
     outline: none;
 }
-.select-filtro {
-    padding: 0.55rem 1.25rem;
-    border: 1px solid #D4D4D8;
-    border-radius: 8px;
-    background: #F8F8F8;
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-}
 .card-cliente {
     background: #F5F5F5;
     border: 1px solid #D4D4D4;
@@ -652,64 +642,6 @@ footer {
 }
 .btn-trash:hover { 
     color: #DC2626; 
-}
-
-/* Reportes */
-
-.kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.65rem;
-}
-
-.card-kpi {
-    background: var(--negro);
-    color: var(--blanco);
-    border-radius: 10px;
-    padding: 1.25rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap:0.5rem;
-    min-width: 0;
-}
-.kpi-titulo {
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-align: center;
-}
-.kpi-dato {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: center;
-    gap: 0.5rem;
-}
-.kpi-dato strong { 
-    font-size: 2.75rem; line-height: 1; 
-}
-
-.kpi-variacion {
-    font-size: 0.85rem;
-    font-weight: 700;
-}
-
-.seccion-grafica {
-    width: 100%;
-    margin-top: 2.5rem; 
-}
-
-.barra-derecha {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 1rem;
-}
-
-.card-grafica {
-    background: var(--blanco);
-    border: 1px solid #D4D4D4;
-    border-radius: 12px;
-    padding: 2rem;
-    min-height: 340px;
 }
 .modal-catalogo {
     width: min(90%, 560px);

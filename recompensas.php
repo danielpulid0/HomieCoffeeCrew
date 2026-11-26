@@ -33,7 +33,7 @@
 <body>
     <?php renderizar_navbar(); ?>
 
-    <main id="promos">
+    <main id="promos" class="contenedor">
         <?php $sellos = normalizar_sellos($cliente['sellos_actuales']); ?>
         <section class="tarjeta-digital">
             <div id="tarjeta-header" class="fila-flexible">

@@ -24,7 +24,7 @@ if ($resultado_bebidas) {
 <body>
     <?php renderizar_navbar(); ?>
 
-    <main id="menu"">
+    <main id="menu" class="contenedor">
         <section id="menu-header" class="columna-de-elementos">
             <h1>Nuestra Barra de Bebidas</h1>
             <?php if ($resultado_bebidas): ?>

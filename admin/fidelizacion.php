@@ -1,6 +1,29 @@
 <?php
 require_once __DIR__ . '/../includes/funciones.php';
 requerir_empleado();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
+    $id_usuario = (int) ($_POST['id_usuario'] ?? 0);
+    $accion = obtener_post_texto('accion', false);
+
+    if ($id_usuario > 0 && $accion === 'sumar') {
+        $consulta = mysqli_prepare($db, "UPDATE usuarios SET sellos_actuales = LEAST(sellos_actuales + 1, 10) WHERE id_usuario = ? AND rol = 'cliente';");
+        if ($consulta) {
+            mysqli_stmt_bind_param($consulta, 'i', $id_usuario);
+            mysqli_stmt_execute($consulta);
+        }
+    } elseif ($id_usuario > 0 && $accion === 'canjear') {
+        $consulta = mysqli_prepare($db, "UPDATE usuarios SET sellos_actuales = 0 WHERE id_usuario = ? AND rol = 'cliente' AND sellos_actuales >= 10;");
+        if ($consulta) {
+            mysqli_stmt_bind_param($consulta, 'i', $id_usuario);
+            mysqli_stmt_execute($consulta);
+        }
+    }
+
+    header('Location: fidelizacion.php');
+    exit;
+}
+
 $resultado_clientes = obtener_clientes();
 ?>
 <!DOCTYPE html>
@@ -50,7 +73,7 @@ $resultado_clientes = obtener_clientes();
 
             <div class="columna-de-elementos">
                 <?php if (!$resultado_clientes): ?>
-                    <p class="mensaje-error" role="alert">No fue posible cargar los clientes. Verifica la conexión con la base de datos.</p>
+                    <p class="mensaje-error" role="alert">No fue posible cargar los clientes.</p>
                 <?php elseif (mysqli_num_rows($resultado_clientes) === 0): ?>
                     <p>No hay clientes registrados.</p>
                 <?php else: ?>
@@ -65,10 +88,11 @@ $resultado_clientes = obtener_clientes();
                                         <span class="codigo-cliente"><?= escapar(formatear_codigo_miembro($cliente['id_usuario'])) ?></span>
                                     </div>
                                 </div>
-                                <div class="cliente-acciones">
-                                    <button type="button" class="btn btn-solid">Registrar(+1)</button>
-                                    <button type="button" class="btn btn-canjear<?= $sellos >= 10 ? ' disponible' : '' ?>"<?= $sellos < 10 ? ' disabled' : '' ?>>Canjear premio</button>
-                                </div>
+                                <form action="fidelizacion.php" method="post" class="cliente-acciones">
+                                    <input type="hidden" name="id_usuario" value="<?= (int) $cliente['id_usuario'] ?>">
+                                    <button type="submit" name="accion" value="sumar" class="btn btn-solid"<?= $sellos >= 10 ? ' disabled' : '' ?>>Registrar(+1)</button>
+                                    <button type="submit" name="accion" value="canjear" class="btn btn-canjear<?= $sellos >= 10 ? ' disponible' : '' ?>"<?= $sellos < 10 ? ' disabled' : '' ?>>Canjear premio</button>
+                                </form>
                             </div>
 
                             <hr>

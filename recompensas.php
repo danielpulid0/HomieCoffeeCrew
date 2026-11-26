@@ -9,7 +9,6 @@
         header('Location: admin/catalogo.php');
         exit;
     }
-
     $cliente = obtener_datos_cliente($usuario['id_usuario']);
     if (!$cliente) {
         $_SESSION = array();
@@ -38,7 +37,7 @@
         <?php $sellos = normalizar_sellos($cliente['sellos_actuales']); ?>
         <section class="tarjeta-digital">
             <div id="tarjeta-header" class="fila-flexible">
-                <h2>Tarjeta digital de <?= escapar($cliente['nombre']) ?></h2>
+                <h2>Tarjeta digital</h2>
                 <span class="codigo-miembro"><?= escapar(formatear_codigo_miembro($cliente['id_usuario'])) ?></span>
             </div>
             <div class="grid-sellos">

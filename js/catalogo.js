@@ -1,4 +1,5 @@
 const modalItem = document.querySelector("#modal-item");
+const modalTitulo = document.querySelector("#modal-titulo");
 const modalEliminar = document.querySelector("#modal-eliminar");
 const selectorTipoItem = document.querySelector("#selector-tipo-item");
 const formulariosItem = {
@@ -16,6 +17,40 @@ document.querySelectorAll(".modal-catalogo").forEach((modal) => {
     });
     modal.querySelectorAll(".btn-cerrar-modal, .btn-cancelar-modal").forEach((boton) => {
         boton.addEventListener("click", () => modal.close());
+    });
+});
+
+document.querySelectorAll("[data-editar-tipo]").forEach((boton) => {
+    boton.addEventListener("click", () => {
+        const tipo = boton.dataset.editarTipo;
+        const formulario = formulariosItem[tipo];
+        if (!formulario) return;
+
+        selectorTipoItem.hidden = true;
+        Object.values(formulariosItem).forEach((form) => { form.hidden = true; });
+        formulario.hidden = false;
+        formulario.querySelector(".volver-selector").hidden = true;
+
+        if (tipo === "bebida") {
+            modalTitulo.textContent = "Editar bebida";
+            document.querySelector("#bebida-id").value = boton.dataset.id;
+            document.querySelector("#bebida-nombre").value = boton.dataset.nombre;
+            document.querySelector("#bebida-categoria").value = boton.dataset.categoria;
+            document.querySelector("#bebida-descripcion").value = boton.dataset.descripcion;
+            document.querySelector("#bebida-precio").value = boton.dataset.precio;
+            document.querySelector("#bebida-estado").value = boton.dataset.estado;
+            document.querySelector("#btn-guardar-bebida").textContent = "Guardar cambios";
+        } else {
+            modalTitulo.textContent = "Editar promoción";
+            document.querySelector("#promocion-id").value = boton.dataset.id;
+            document.querySelector("#promocion-titulo").value = boton.dataset.titulo;
+            document.querySelector("#promocion-inicio").value = boton.dataset.inicio;
+            document.querySelector("#promocion-vencimiento").value = boton.dataset.vencimiento;
+            document.querySelector("#promocion-estado").value = boton.dataset.estado;
+            document.querySelector("#btn-guardar-promocion").textContent = "Guardar cambios";
+        }
+
+        modalItem.showModal();
     });
 });
 
@@ -49,11 +84,64 @@ document.querySelectorAll(".volver-selector").forEach((boton) => {
 });
 
 modalItem.addEventListener("close", () => {
+    modalTitulo.textContent = "Agregar item";
+    document.querySelector("#bebida-id").value = "";
+    document.querySelector("#promocion-id").value = "";
+    document.querySelector("#btn-guardar-bebida").textContent = "Agregar bebida";
+    document.querySelector("#btn-guardar-promocion").textContent = "Agregar promoción";
     Object.values(formulariosItem).forEach((formulario) => {
         formulario.reset();
         formulario.hidden = true;
+        formulario.querySelector(".volver-selector").hidden = false;
+        const mensajeError = formulario.querySelector(".mensaje-error");
+        if (mensajeError) mensajeError.hidden = true;
     });
     selectorTipoItem.hidden = false;
+});
+
+const errorBebida = document.querySelector("#error-bebida");
+formulariosItem.bebida.addEventListener("submit", (evento) => {
+    const nombre = document.querySelector("#bebida-nombre").value.trim();
+    const descripcion = document.querySelector("#bebida-descripcion").value.trim();
+    const precioTexto = document.querySelector("#bebida-precio").value.trim();
+    const precio = Number(precioTexto);
+
+    let mensaje = "";
+    if (nombre === "" || descripcion === "") {
+        mensaje = "Completa el nombre y la descripción de la bebida.";
+    } else if (precioTexto === "" || isNaN(precio) || precio < 0) {
+        mensaje = "Ingresa un precio válido mayor o igual a 0.";
+    }
+
+    if (mensaje !== "") {
+        evento.preventDefault();
+        errorBebida.textContent = mensaje;
+        errorBebida.hidden = false;
+    } else {
+        errorBebida.hidden = true;
+    }
+});
+
+const errorPromocion = document.querySelector("#error-promocion");
+formulariosItem.promocion.addEventListener("submit", (evento) => {
+    const titulo = document.querySelector("#promocion-titulo").value.trim();
+    const inicio = document.querySelector("#promocion-inicio").value;
+    const vencimiento = document.querySelector("#promocion-vencimiento").value;
+
+    let mensaje = "";
+    if (titulo === "" || inicio === "" || vencimiento === "") {
+        mensaje = "Completa el título y ambas fechas de la promoción.";
+    } else if (inicio > vencimiento) {
+        mensaje = "La fecha de inicio no puede ser mayor que la de vencimiento.";
+    }
+
+    if (mensaje !== "") {
+        evento.preventDefault();
+        errorPromocion.textContent = mensaje;
+        errorPromocion.hidden = false;
+    } else {
+        errorPromocion.hidden = true;
+    }
 });
 
 document.querySelectorAll(".tab-btn").forEach((boton) => {

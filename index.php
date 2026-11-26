@@ -16,7 +16,7 @@ iniciar_sesion();
 <body>
     <?php renderizar_navbar(); ?>
 
-    <main>
+    <main id="landing">
         <section id="hero" class="dos-columnas">
             <img src="img/cafeHalloween.png" alt="Bebida de temporada">
             <div class="columna-de-elementos hero-text">

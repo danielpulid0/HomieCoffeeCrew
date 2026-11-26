@@ -52,10 +52,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <img src="../img/cafeMano.png" alt="Vaso Homie Coffee Crew en mano">
         <div class="form-wrapper contenedor columna-de-elementos">
             <h1>Registro</h1>
-            <form action="registro.php" method="POST" class="formulario columna-de-elementos">
+            <form id="form-registro" action="registro.php" method="POST" class="formulario columna-de-elementos">
                 <?php if ($error !== ''): ?>
                     <p class="mensaje-error" role="alert"><?= escapar($error) ?></p>
                 <?php endif; ?>
+                <p id="error-registro" class="mensaje-error" role="alert" hidden></p>
                 <div class="grupo-input columna-de-elementos">
                     <label for="nombre">Nombre *</label>
                     <input type="text" id="nombre" name="nombre" maxlength="100" value="<?= escapar($nombre) ?>" required>
@@ -96,5 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         </div>
     </main>
+    <script src="../js/validacion.js"></script>
 </body>
 </html>

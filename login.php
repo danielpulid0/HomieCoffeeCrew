@@ -55,13 +55,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h1>Bienvenido, Homie</h1>
                 <p>Inicia sesión en tu cuenta</p>
             </div>
-            <form action="login.php" method="POST" class="formulario">
+            <form id="form-login" action="login.php" method="POST" class="formulario">
                 <?php if ($mensaje !== ''): ?>
                     <p class="mensaje-exito" role="status"><?= escapar($mensaje) ?></p>
                 <?php endif; ?>
                 <?php if ($error !== ''): ?>
                     <p class="mensaje-error" role="alert"><?= escapar($error) ?></p>
                 <?php endif; ?>
+                <p id="error-login" class="mensaje-error" role="alert" hidden></p>
                 <div class="grupo-input">
                     <label for="correo">Correo electrónico:</label>
                     <input type="email" id="correo" name="correo" value="<?= escapar($correo) ?>" required>
@@ -81,5 +82,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p class="pie-form">¿No tienes cuenta? <a href="cliente/registro.php">Regístrate</a></p>
         </div>
     </div>
+    <script src="js/validacion.js"></script>
 </body>
 </html>

@@ -107,8 +107,8 @@ formulariosItem.bebida.addEventListener("submit", (evento) => {
     let mensaje = "";
     if (!nombre || !descripcion || !precio) {
         mensaje = "Completa todos los campos.";
-    } else if (isNaN(Number(precio)) || Number(precio) < 0) {
-        mensaje = "Ingresa un precio válido mayor o igual a 0.";
+    } else if (isNaN(Number(precio)) || Number(precio) <= 0) {
+        mensaje = "Ingresa un precio válido, mayor a 0.";
     }
 
     if (mensaje) {

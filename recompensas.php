@@ -54,6 +54,13 @@
                     <img src="img/trofeo.png" alt="Premio al completar 10 sellos">
                 </div>
             </div>
+            <div class="fila-flexible">
+                <?php if ($sellos < 10): ?>
+                    <span class="conteo-sellos"><?= $sellos ?>/10 sellos</span>
+                <?php elseif ($sellos == 10): ?>
+                    <span class="mensaje-exito">¡Completaste tus 10 sellos! Ya puedes canjear tu bebida gratis en barra.</span>
+                <?php endif; ?>
+            </div>
         </section>
 
         <section class="promociones-seccion">

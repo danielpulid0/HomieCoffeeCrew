@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $precio = (float) $precio_texto;
         $estado = obtener_post_texto('estado', false) === 'Deshabilitado' ? 0 : 1;
 
-        if ($nombre === '' || $categoria === '' || !is_numeric($precio_texto) || $precio < 0) {
+        if ($nombre === '' || $categoria === '' || !is_numeric($precio_texto) || $precio <= 0) {
             $error_catalogo = 'Revisa el nombre, la categoría y el precio de la bebida.';
         } elseif (guardar_bebida($id, $nombre, $descripcion, $precio, $categoria, $estado)) {
             header('Location: catalogo.php?guardado=bebida');

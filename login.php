@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn btn-solid btn-block">Ingresar</button>
             </form>
 
-            <p class="pie-form">¿No tienes cuenta? <a href="cliente/registro.php">Regístrate</a></p>
+            <p class="pie-form">¿No tienes cuenta? <a href="registro.php">Regístrate</a></p>
         </div>
     </div>
     <script src="js/validacion.js"></script>

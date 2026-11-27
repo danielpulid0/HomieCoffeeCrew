@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../includes/funciones.php';
+require_once __DIR__ . '/includes/funciones.php';
 iniciar_sesion();
 
 $error = '';
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $registro = registrar_cliente($nombre, $correo, $password);
         if ($registro === true) {
             $_SESSION['mensaje_login'] = 'Tu cuenta se creó correctamente. Ya puedes iniciar sesión.';
-            header('Location: ../login.php');
+            header('Location: login.php');
             exit;
         }
         $error = $registro === 'correo_existente'
@@ -39,17 +39,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro | Homie Coffee Crew</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body class="fondo-crema">
-    <?php renderizar_navbar('../'); ?>
+    <?php renderizar_navbar(); ?>
 
     <main id="registro" class="dos-columnas">
-        <img src="../img/cafeMano.png" alt="Vaso Homie Coffee Crew en mano">
+        <img src="img/cafeMano.png" alt="Vaso Homie Coffee Crew en mano">
         <div class="form-wrapper contenedor columna-de-elementos">
             <h1>Registro</h1>
             <form id="form-registro" action="registro.php" method="POST" class="formulario columna-de-elementos" novalidate>
@@ -89,11 +89,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </label>
 
                 <button type="submit" class="btn btn-solid btn-block">Crear cuenta</button>
-                <p class="pie-form texto-centrado">¿Ya tienes cuenta? <a href="../login.php">Inicia sesión</a></p>
+                <p class="pie-form texto-centrado">¿Ya tienes cuenta? <a href="login.php">Inicia sesión</a></p>
             </form>
 
         </div>
     </main>
-    <script src="../js/validacion.js"></script>
+    <script src="js/validacion.js"></script>
 </body>
 </html>

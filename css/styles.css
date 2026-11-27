@@ -506,25 +506,6 @@ footer {
 .panel-admin {
     padding: 2rem;
 }
-.buscador-input {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    background: #F4F4F5;
-    border: 1px solid #D4D4D8;
-    border-radius: 8px;
-    padding: 0.55rem 0.9rem;
-    max-width: 320px;
-    width: 100%;
-    color: var(--gris-texto);
-}
-.buscador-input input {
-    border: none;
-    background: transparent;
-    width: 100%;
-    font-size: 0.9rem;
-    outline: none;
-}
 .card-cliente {
     background: #F5F5F5;
     border: 1px solid #D4D4D4;

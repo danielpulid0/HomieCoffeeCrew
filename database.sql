@@ -35,17 +35,6 @@ CREATE TABLE promociones (
     estado_activo TINYINT(1) NOT NULL DEFAULT 1
 );
 
--- 5. Tabla de Historial de Fidelización
-CREATE TABLE historial_fidelizacion (
-    id_movimiento INT AUTO_INCREMENT PRIMARY KEY,
-    id_cliente INT NOT NULL,
-    id_empleado INT NOT NULL,
-    tipo_movimiento ENUM('sello_otorgado', 'premio_canjeado') NOT NULL,
-    fecha_movimiento DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_historial_cliente FOREIGN KEY (id_cliente) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
-    CONSTRAINT fk_historial_empleado FOREIGN KEY (id_empleado) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
-);
-
 -- =========================================================================
 -- DATOS DE PRUEBA INICIALES
 -- =========================================================================

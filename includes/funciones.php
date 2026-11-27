@@ -74,6 +74,78 @@ function obtener_clientes() {
     return ejecutar_consulta($sql);
 }
 
+function guardar_bebida($id, $nombre, $descripcion, $precio, $categoria, $estado) {
+    $db = obtener_conexion();
+    if (!$db) return false;
+
+    if ($id > 0) {
+        $consulta = mysqli_prepare($db, 'UPDATE bebidas SET nombre = ?, descripcion = ?, precio = ?, categoria = ?, estado_disponibilidad = ? WHERE id_bebida = ?;');
+        if (!$consulta) return false;
+        mysqli_stmt_bind_param($consulta, 'ssdsii', $nombre, $descripcion, $precio, $categoria, $estado, $id);
+    } else {
+        $consulta = mysqli_prepare($db, 'INSERT INTO bebidas (nombre, descripcion, precio, categoria, estado_disponibilidad) VALUES (?, ?, ?, ?, ?);');
+        if (!$consulta) return false;
+        mysqli_stmt_bind_param($consulta, 'ssdsi', $nombre, $descripcion, $precio, $categoria, $estado);
+    }
+
+    return mysqli_stmt_execute($consulta);
+}
+
+function guardar_promocion($id, $titulo, $inicio, $vencimiento, $estado) {
+    $db = obtener_conexion();
+    if (!$db) return false;
+
+    if ($id > 0) {
+        $consulta = mysqli_prepare($db, 'UPDATE promociones SET titulo = ?, fecha_inicio = ?, fecha_vigencia = ?, estado_activo = ? WHERE id_promocion = ?;');
+        if (!$consulta) return false;
+        mysqli_stmt_bind_param($consulta, 'sssii', $titulo, $inicio, $vencimiento, $estado, $id);
+    } else {
+        $consulta = mysqli_prepare($db, 'INSERT INTO promociones (titulo, fecha_inicio, fecha_vigencia, estado_activo) VALUES (?, ?, ?, ?);');
+        if (!$consulta) return false;
+        mysqli_stmt_bind_param($consulta, 'sssi', $titulo, $inicio, $vencimiento, $estado);
+    }
+
+    return mysqli_stmt_execute($consulta);
+}
+
+function eliminar_registro($entidad, $id) {
+    $db = obtener_conexion();
+    $tablas = array(
+        'bebida' => array('bebidas', 'id_bebida'),
+        'promocion' => array('promociones', 'id_promocion')
+    );
+    if (!$db || !isset($tablas[$entidad]) || $id <= 0) return false;
+
+    list($tabla, $columna_id) = $tablas[$entidad];
+    $consulta = mysqli_prepare($db, "DELETE FROM $tabla WHERE $columna_id = ? LIMIT 1;");
+    if (!$consulta) return false;
+
+    mysqli_stmt_bind_param($consulta, 'i', $id);
+    return mysqli_stmt_execute($consulta);
+}
+
+function sumar_sello($id_usuario) {
+    $db = obtener_conexion();
+    if (!$db || $id_usuario <= 0) return false;
+
+    $consulta = mysqli_prepare($db, "UPDATE usuarios SET sellos_actuales = LEAST(sellos_actuales + 1, 10) WHERE id_usuario = ? AND rol = 'cliente';");
+    if (!$consulta) return false;
+
+    mysqli_stmt_bind_param($consulta, 'i', $id_usuario);
+    return mysqli_stmt_execute($consulta);
+}
+
+function canjear_premio($id_usuario) {
+    $db = obtener_conexion();
+    if (!$db || $id_usuario <= 0) return false;
+
+    $consulta = mysqli_prepare($db, "UPDATE usuarios SET sellos_actuales = 0 WHERE id_usuario = ? AND rol = 'cliente' AND sellos_actuales >= 10;");
+    if (!$consulta) return false;
+
+    mysqli_stmt_bind_param($consulta, 'i', $id_usuario);
+    return mysqli_stmt_execute($consulta);
+}
+
 function registrar_cliente($nombre, $correo, $password) {
     $db = obtener_conexion();
     if (!$db) return false;
@@ -163,7 +235,7 @@ function renderizar_navbar($prefijo = '') {
                     </a>
                 <?php else: ?>
                     <a href="<?= $ruta_prefijo ?>login.php" class="btn btn-outline">Iniciar sesión</a>
-                    <a href="<?= $ruta_prefijo ?>cliente/registro.php" class="btn btn-solid">Unirse al crew</a>
+                    <a href="<?= $ruta_prefijo ?>registro.php" class="btn btn-solid">Unirse al crew</a>
                 <?php endif; ?>
             </div>
         </nav>

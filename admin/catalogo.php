@@ -21,22 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($nombre === '' || $categoria === '' || !is_numeric($precio_texto) || $precio < 0) {
             $error_catalogo = 'Revisa el nombre, la categoría y el precio de la bebida.';
+        } elseif (guardar_bebida($id, $nombre, $descripcion, $precio, $categoria, $estado)) {
+            header('Location: catalogo.php?guardado=bebida');
+            exit;
         } else {
-            if ($id > 0) {
-                $consulta = mysqli_prepare($db, 'UPDATE bebidas SET nombre = ?, descripcion = ?, precio = ?, categoria = ?, estado_disponibilidad = ? WHERE id_bebida = ?;');
-                if ($consulta) {
-                    mysqli_stmt_bind_param($consulta, 'ssdsii', $nombre, $descripcion, $precio, $categoria, $estado, $id);
-                }
-            } else {
-                $consulta = mysqli_prepare($db, 'INSERT INTO bebidas (nombre, descripcion, precio, categoria, estado_disponibilidad) VALUES (?, ?, ?, ?, ?);');
-                if ($consulta) {
-                    mysqli_stmt_bind_param($consulta, 'ssdsi', $nombre, $descripcion, $precio, $categoria, $estado);
-                }
-            }
-            if ($consulta && mysqli_stmt_execute($consulta)) {
-                header('Location: catalogo.php?guardado=bebida');
-                exit;
-            }
             $error_catalogo = 'No se pudo guardar la bebida.';
         }
     } elseif ($tipo === 'promocion') {
@@ -48,44 +36,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($titulo === '' || $inicio === '' || $vencimiento === '' || $inicio > $vencimiento) {
             $error_catalogo = 'Revisa el título y el periodo de vigencia de la promoción.';
+        } elseif (guardar_promocion($id, $titulo, $inicio, $vencimiento, $estado)) {
+            header('Location: catalogo.php?guardado=promocion');
+            exit;
         } else {
-            if ($id > 0) {
-                $consulta = mysqli_prepare($db, 'UPDATE promociones SET titulo = ?, fecha_inicio = ?, fecha_vigencia = ?, estado_activo = ? WHERE id_promocion = ?;');
-                if ($consulta) {
-                    mysqli_stmt_bind_param($consulta, 'sssii', $titulo, $inicio, $vencimiento, $estado, $id);
-                }
-            } else {
-                $consulta = mysqli_prepare($db, 'INSERT INTO promociones (titulo, fecha_inicio, fecha_vigencia, estado_activo) VALUES (?, ?, ?, ?);');
-                if ($consulta) {
-                    mysqli_stmt_bind_param($consulta, 'sssi', $titulo, $inicio, $vencimiento, $estado);
-                }
-            }
-            if ($consulta && mysqli_stmt_execute($consulta)) {
-                header('Location: catalogo.php?guardado=promocion');
-                exit;
-            }
             $error_catalogo = 'No se pudo guardar la promoción.';
         }
     } elseif ($tipo === 'eliminar') {
-        $tablas = array(
-            'bebida' => array('bebidas', 'id_bebida'),
-            'promocion' => array('promociones', 'id_promocion')
-        );
         $entidad = obtener_post_texto('entidad', false);
         $id = (int) ($_POST['id'] ?? 0);
 
-        if (!isset($tablas[$entidad]) || $id <= 0) {
+        if (!in_array($entidad, array('bebida', 'promocion'), true) || $id <= 0) {
             $error_catalogo = 'El elemento que intentas eliminar no es válido.';
+        } elseif (eliminar_registro($entidad, $id)) {
+            header('Location: catalogo.php?guardado=eliminado');
+            exit;
         } else {
-            list($tabla, $columna_id) = $tablas[$entidad];
-            $consulta = mysqli_prepare($db, "DELETE FROM $tabla WHERE $columna_id = ? LIMIT 1;");
-            if ($consulta) {
-                mysqli_stmt_bind_param($consulta, 'i', $id);
-                if (mysqli_stmt_execute($consulta)) {
-                    header('Location: catalogo.php?guardado=eliminado');
-                    exit;
-                }
-            }
             $error_catalogo = 'No se pudo eliminar el registro.';
         }
     } else {
@@ -201,15 +167,6 @@ $resultado_promociones = obtener_promociones();
             </div>
 
             <div id="tab-bebidas" class="columna-de-elementos tab">
-                <div class="fila-flexible">
-                    <div class="buscador-input">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        <input type="search" placeholder="Buscar" aria-label="Buscar bebida">
-                    </div>
-                </div>
                 <div class="tabla-contenedor">
                     <table class="tabla-admin">
                         <thead>
@@ -245,15 +202,6 @@ $resultado_promociones = obtener_promociones();
             </div>
 
             <div id="tab-promociones" class="columna-de-elementos oculto tab">
-                <div class="fila-flexible">
-                    <div class="buscador-input">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        <input type="search" placeholder="Buscar" aria-label="Buscar promoción">
-                    </div>
-                </div>
                 <div class="tabla-contenedor">
                     <table class="tabla-admin">
                         <thead>
@@ -385,5 +333,6 @@ $resultado_promociones = obtener_promociones();
         </form>
     </dialog>
     <script src="../js/catalogo.js"></script>
+    <script src="../js/validacion.js"></script>
 </body>
 </html>

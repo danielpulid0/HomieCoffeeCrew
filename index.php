@@ -46,7 +46,7 @@ iniciar_sesion();
                 <img src="img/cafeFrio.png" alt="Bebida fría" class="vaso-flotante">
                 <div class="columna-de-elementos">
                     <h2>Encuentra tu match del día</h2>
-                    <a href="menu.html" class="enlace-subrayado">Ver todas las bebidas</a>
+                    <a href="menu.php" class="enlace-subrayado">Ver todas las bebidas</a>
                 </div>
                 <img src="img/cafeCanela.png" alt="Bebida fría con cereal" class="vaso-flotante">
             </div>

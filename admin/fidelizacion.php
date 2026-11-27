@@ -2,22 +2,14 @@
 require_once __DIR__ . '/../includes/funciones.php';
 requerir_empleado();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_usuario = (int) ($_POST['id_usuario'] ?? 0);
     $accion = obtener_post_texto('accion', false);
 
-    if ($id_usuario > 0 && $accion === 'sumar') {
-        $consulta = mysqli_prepare($db, "UPDATE usuarios SET sellos_actuales = LEAST(sellos_actuales + 1, 10) WHERE id_usuario = ? AND rol = 'cliente';");
-        if ($consulta) {
-            mysqli_stmt_bind_param($consulta, 'i', $id_usuario);
-            mysqli_stmt_execute($consulta);
-        }
-    } elseif ($id_usuario > 0 && $accion === 'canjear') {
-        $consulta = mysqli_prepare($db, "UPDATE usuarios SET sellos_actuales = 0 WHERE id_usuario = ? AND rol = 'cliente' AND sellos_actuales >= 10;");
-        if ($consulta) {
-            mysqli_stmt_bind_param($consulta, 'i', $id_usuario);
-            mysqli_stmt_execute($consulta);
-        }
+    if ($accion === 'sumar') {
+        sumar_sello($id_usuario);
+    } elseif ($accion === 'canjear') {
+        canjear_premio($id_usuario);
     }
 
     header('Location: fidelizacion.php');
@@ -63,14 +55,6 @@ $resultado_clientes = obtener_clientes();
     <main id="fidelizacion" class="contenedor">
         <h1>Control de fidelización</h1>
         <section class="panel-admin">
-            <div class="buscador-input">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input type="search" id="buscar-cliente" placeholder="Buscar" aria-label="Buscar cliente">
-            </div>
-
             <div class="columna-de-elementos">
                 <?php if (!$resultado_clientes): ?>
                     <p class="mensaje-error" role="alert">No fue posible cargar los clientes.</p>

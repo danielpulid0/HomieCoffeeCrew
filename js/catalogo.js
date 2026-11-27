@@ -99,48 +99,43 @@ modalItem.addEventListener("close", () => {
     selectorTipoItem.hidden = false;
 });
 
-const errorBebida = document.querySelector("#error-bebida");
 formulariosItem.bebida.addEventListener("submit", (evento) => {
     const nombre = document.querySelector("#bebida-nombre").value.trim();
     const descripcion = document.querySelector("#bebida-descripcion").value.trim();
-    const precioTexto = document.querySelector("#bebida-precio").value.trim();
-    const precio = Number(precioTexto);
+    const precio = document.querySelector("#bebida-precio").value.trim();
 
     let mensaje = "";
-    if (nombre === "" || descripcion === "") {
-        mensaje = "Completa el nombre y la descripción de la bebida.";
-    } else if (precioTexto === "" || isNaN(precio) || precio < 0) {
+    if (!nombre || !descripcion || !precio) {
+        mensaje = "Completa todos los campos.";
+    } else if (isNaN(Number(precio)) || Number(precio) < 0) {
         mensaje = "Ingresa un precio válido mayor o igual a 0.";
     }
 
-    if (mensaje !== "") {
+    if (mensaje) {
         evento.preventDefault();
-        errorBebida.textContent = mensaje;
-        errorBebida.hidden = false;
-    } else {
-        errorBebida.hidden = true;
+        const error = document.querySelector("#error-bebida");
+        error.textContent = mensaje;
+        error.hidden = false;
     }
 });
 
-const errorPromocion = document.querySelector("#error-promocion");
 formulariosItem.promocion.addEventListener("submit", (evento) => {
     const titulo = document.querySelector("#promocion-titulo").value.trim();
     const inicio = document.querySelector("#promocion-inicio").value;
     const vencimiento = document.querySelector("#promocion-vencimiento").value;
 
     let mensaje = "";
-    if (titulo === "" || inicio === "" || vencimiento === "") {
-        mensaje = "Completa el título y ambas fechas de la promoción.";
+    if (!titulo || !inicio || !vencimiento) {
+        mensaje = "Completa todos los campos.";
     } else if (inicio > vencimiento) {
         mensaje = "La fecha de inicio no puede ser mayor que la de vencimiento.";
     }
 
-    if (mensaje !== "") {
+    if (mensaje) {
         evento.preventDefault();
-        errorPromocion.textContent = mensaje;
-        errorPromocion.hidden = false;
-    } else {
-        errorPromocion.hidden = true;
+        const error = document.querySelector("#error-promocion");
+        error.textContent = mensaje;
+        error.hidden = false;
     }
 });
 

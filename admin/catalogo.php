@@ -301,7 +301,7 @@ $resultado_promociones = obtener_promociones();
             </div>
         </div>
 
-        <form id="form-bebida" class="formulario" action="catalogo.php" method="post" hidden>
+        <form id="form-bebida" class="formulario" action="catalogo.php" method="post" hidden novalidate>
             <p id="error-bebida" class="mensaje-error" role="alert" hidden></p>
             <input type="hidden" name="tipo" value="bebida">
             <input type="hidden" name="id" id="bebida-id">
@@ -338,7 +338,7 @@ $resultado_promociones = obtener_promociones();
             </div>
         </form>
 
-        <form id="form-promocion" class="formulario" action="catalogo.php" method="post" hidden>
+        <form id="form-promocion" class="formulario" action="catalogo.php" method="post" hidden novalidate>
             <p id="error-promocion" class="mensaje-error" role="alert" hidden></p>
             <input type="hidden" name="tipo" value="promocion">
             <input type="hidden" name="id" id="promocion-id">
